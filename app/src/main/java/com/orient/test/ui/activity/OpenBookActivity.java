@@ -213,10 +213,6 @@ public class OpenBookActivity extends AppCompatActivity implements Animation.Ani
         scaleAnimation.setDuration(1000);
         scaleAnimation.setFillAfter(true);  //动画停留在最后一帧
         scaleAnimation.setAnimationListener(OpenBookActivity.this);
-        scaleAnimation.mParentWidth = displayMetrics.widthPixels;
-        scaleAnimation.mParentHeight = displayMetrics.heightPixels;
-        scaleAnimation.mItemWidth = mContent.getWidth();
-        scaleAnimation.mItemHeight = mContent.getHeight();
 
         threeDAnimation = new Rotate3DAnimation(OpenBookActivity.this, -180, 0
                 , location[0], location[1], horScale, verScale, true);
