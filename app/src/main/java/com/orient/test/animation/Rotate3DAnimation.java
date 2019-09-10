@@ -19,7 +19,8 @@ public class Rotate3DAnimation extends Animation {
     private final float mMarginLeft;
     private final float mMarginTop;
     // private final float mDepthZ;
-    private final float mAnimationScale;
+    private final float mAnimationScaleX;
+    private final float mAnimationScaleY;
     private boolean reverse;
     private Camera mCamera;
 
@@ -30,12 +31,13 @@ public class Rotate3DAnimation extends Animation {
     private float scale = 1;    // <------- 像素密度
 
     public Rotate3DAnimation(Context context, float mFromDegrees, float mToDegrees, float mMarginLeft, float mMarginTop,
-                             float animationScale, boolean reverse) {
+                             float animationScaleX, float animationScaleY, boolean reverse) {
         this.mFromDegrees = mFromDegrees;
         this.mToDegrees = mToDegrees;
         this.mMarginLeft = mMarginLeft;
         this.mMarginTop = mMarginTop;
-        this.mAnimationScale = animationScale;
+        this.mAnimationScaleX = animationScaleX;
+        this.mAnimationScaleY = animationScaleY;
         this.reverse = reverse;
 
         // 获取手机像素密度 （即dp与px的比例）
@@ -75,10 +77,10 @@ public class Rotate3DAnimation extends Animation {
         matrix.setValues(mValues);                //重新赋值
 
         if (reverse) {
-            matrix.postScale(1 + (mAnimationScale - 1) * interpolatedTime, 1 + (mAnimationScale - 1) * interpolatedTime,
+            matrix.postScale(1 + (mAnimationScaleX - 1) * interpolatedTime, 1 + (mAnimationScaleY - 1) * interpolatedTime,
                     mPivotX - mMarginLeft, mPivotY - mMarginTop);
         } else {
-            matrix.postScale(1 + (mAnimationScale - 1) * (1 - interpolatedTime), 1 + (mAnimationScale - 1) * (1 - interpolatedTime),
+            matrix.postScale(1 + (mAnimationScaleX - 1) * (1 - interpolatedTime), 1 + (mAnimationScaleY - 1) * (1 - interpolatedTime),
                     mPivotX - mMarginLeft, mPivotY - mMarginTop);
         }
     }

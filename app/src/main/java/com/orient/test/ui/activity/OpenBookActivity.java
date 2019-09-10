@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
@@ -33,6 +34,10 @@ public class OpenBookActivity extends AppCompatActivity implements Animation.Ani
     private List<Integer> values = new ArrayList<>();
     // 记录View的位置
     private int[] location = new int[2];
+    // 第一个View的位置
+    private int[] firstItemLocation = new int[2];
+    private int itemWidth;
+    private int itemHeight;
     // 内容页
     private ImageView mContent;
     // 封面
@@ -92,6 +97,16 @@ public class OpenBookActivity extends AppCompatActivity implements Animation.Ani
 
         // 当界面重新进入的时候进行合书的动画
         if(isOpenBook) {
+
+            // 两个ImageView设置大小和位置
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mFirst.getLayoutParams();
+            params.leftMargin = firstItemLocation[0];
+            params.topMargin = firstItemLocation[1] - statusHeight;
+            params.width = itemWidth;
+            params.height = itemHeight;
+            mFirst.setLayoutParams(params);
+            mContent.setLayoutParams(params);
+
             scaleAnimation.reverse();
             threeDAnimation.reverse();
             mFirst.clearAnimation();
@@ -133,22 +148,33 @@ public class OpenBookActivity extends AppCompatActivity implements Animation.Ani
         mFirst.setVisibility(View.VISIBLE);
         mContent.setVisibility(View.VISIBLE);
 
+        if (pos == 0) {
+            view.getLocationInWindow(firstItemLocation);
+        }
+
         // 计算当前的位置坐标
         view.getLocationInWindow(location);
-        int width = view.getWidth();
-        int height = view.getHeight();
+        itemWidth = view.getWidth();
+        itemHeight = view.getHeight();
 
         // 两个ImageView设置大小和位置
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mFirst.getLayoutParams();
         params.leftMargin = location[0];
         params.topMargin = location[1] - statusHeight;
-        params.width = width;
-        params.height = height;
+        params.width = itemWidth;
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
+                .getMetrics(displayMetrics);
+        if (location[1] + itemHeight > displayMetrics.heightPixels) {
+            params.height = itemHeight * -1;
+        } else {
+            params.height = itemHeight;
+        }
         mFirst.setLayoutParams(params);
         mContent.setLayoutParams(params);
 
         //mContent = new ImageView(MainActivity.this);
-        Bitmap contentBitmap = Bitmap.createBitmap(width,height, Bitmap.Config.ARGB_8888);
+        Bitmap contentBitmap = Bitmap.createBitmap(itemWidth,itemHeight, Bitmap.Config.ARGB_8888);
         contentBitmap.eraseColor(getResources().getColor(R.color.read_theme_yellow));
         mContent.setImageBitmap(contentBitmap);
 
@@ -171,21 +197,29 @@ public class OpenBookActivity extends AppCompatActivity implements Animation.Ani
         float viewHeight = view.getHeight();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindow().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//        getWindow().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
+                .getMetrics(displayMetrics);
         float maxWidth = displayMetrics.widthPixels;
         float maxHeight = displayMetrics.heightPixels;
         float horScale = maxWidth / viewWidth;
-        float verScale = maxHeight / viewHeight;
+        float verScale = (maxHeight + statusHeight) / viewHeight;
+//        float verScale = maxHeight / viewHeight;
         float scale = horScale > verScale ? horScale : verScale;
 
-        scaleAnimation = new ContentScaleAnimation(location[0], location[1], scale, false);
+        scaleAnimation = new ContentScaleAnimation(location[0], location[1], horScale, verScale, false);
         scaleAnimation.setInterpolator(new DecelerateInterpolator());  //设置插值器
         scaleAnimation.setDuration(1000);
         scaleAnimation.setFillAfter(true);  //动画停留在最后一帧
         scaleAnimation.setAnimationListener(OpenBookActivity.this);
+        scaleAnimation.mParentWidth = displayMetrics.widthPixels;
+        scaleAnimation.mParentHeight = displayMetrics.heightPixels;
+        scaleAnimation.mItemWidth = mContent.getWidth();
+        scaleAnimation.mItemHeight = mContent.getHeight();
 
         threeDAnimation = new Rotate3DAnimation(OpenBookActivity.this, -180, 0
-                , location[0], location[1], scale, true);
+                , location[0], location[1], horScale, verScale, true);
         threeDAnimation.setDuration(1000);                         //设置动画时长
         threeDAnimation.setFillAfter(true);                        //保持旋转后效果
         threeDAnimation.setInterpolator(new DecelerateInterpolator());

@@ -1,5 +1,6 @@
 package com.orient.test.ui.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ public class BookSampleActivity extends AppCompatActivity {
     public static void show(Context context){
         Intent intent = new Intent(context,BookSampleActivity.class);
         context.startActivity(intent);
+        ((Activity)context).overridePendingTransition(0,0);
     }
 
     @Override

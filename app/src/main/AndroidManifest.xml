@@ -26,7 +26,8 @@
         </activity>
         <activity android:name=".ui.activity.OpenBookActivity" />
         <activity android:name=".ui.activity.NetWorkActivity" />
-        <activity android:name=".ui.activity.BookSampleActivity" />
+        <activity android:name=".ui.activity.BookSampleActivity"
+            android:theme="@style/Theme"/>
         <activity android:name=".ui.activity.ConstraintActivity">
 
         </activity>
