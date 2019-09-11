@@ -139,17 +139,16 @@ public class ReaderAnimation {
         float viewHeight = frameInfo.height;
 
         float horScale = mWindowWidth / viewWidth;
-        float verScale = (mWindowHeight + mStatusHeight) / viewHeight;
-//        float verScale = maxHeight / viewHeight;
+        float verScale = mWindowHeight / viewHeight;
         float scale = horScale > verScale ? horScale : verScale;
 
-        mScaleAnimation = new ContentScaleAnimation(frameInfo.leftMargin, frameInfo.topMargin, horScale, verScale, false);
+        mScaleAnimation = new ContentScaleAnimation(frameInfo.leftMargin, frameInfo.topMargin - mStatusHeight, horScale, verScale, false);
         mScaleAnimation.setInterpolator(new DecelerateInterpolator());  //设置插值器
         mScaleAnimation.setDuration(1000);
         mScaleAnimation.setFillAfter(true);  //动画停留在最后一帧
         mScaleAnimation.setAnimationListener(mAnimationListener);
 
-        mThreeDAnimation = new Rotate3DAnimation(mContext, -180, 0, frameInfo.leftMargin, frameInfo.topMargin, horScale, verScale, true);
+        mThreeDAnimation = new Rotate3DAnimation(mContext, -180, 0, frameInfo.leftMargin, frameInfo.topMargin - mStatusHeight, horScale, verScale, true);
         mThreeDAnimation.setDuration(1000);                         //设置动画时长
         mThreeDAnimation.setFillAfter(true);                        //保持旋转后效果
         mThreeDAnimation.setInterpolator(new DecelerateInterpolator());
