@@ -25,6 +25,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
 
     private List<Integer> values;
     private OnBookClickListener listener;
+    public ImageView firstCover;
 
     public BookAdapter(List<Integer> values,OnBookClickListener listener) {
         this.values = values;
@@ -43,6 +44,9 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder,int i) {
+        if (i == 0) {
+            firstCover = viewHolder.cover;
+        }
         viewHolder.cover.setImageResource(R.drawable.preview);
         viewHolder.mTitle.setText("平凡的世界");
 

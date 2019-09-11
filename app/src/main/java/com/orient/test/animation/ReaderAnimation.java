@@ -77,7 +77,8 @@ public class ReaderAnimation {
                 || coverIv == null
                 || backgroundIv == null
                 || mScaleAnimation == null
-                || mThreeDAnimation == null) {
+                || mThreeDAnimation == null
+                || frameInfo == null) {
             return;
         }
         // 两个ImageView设置大小和位置

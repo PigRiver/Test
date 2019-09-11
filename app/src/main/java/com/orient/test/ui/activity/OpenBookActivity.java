@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,12 +27,11 @@ public class OpenBookActivity extends AppCompatActivity implements BookAdapter.O
     private List<Integer> values = new ArrayList<>();
     // 记录View的位置
     private int[] location = new int[2];
-    // 第一个View的位置
-    private int[] firstItemLocation = new int[2];
-    private int itemWidth;
-    private int itemHeight;
+
+    private ReaderAnimation.ItemFrameInfo firstItemFrameInfo;
 
     private ReaderAnimation mReaderAnimation;
+    private Handler mHandler = new Handler();
 
     public static void show(Context context) {
         Intent intent = new Intent(context, OpenBookActivity.class);
@@ -72,14 +72,35 @@ public class OpenBookActivity extends AppCompatActivity implements BookAdapter.O
 
         // 当界面重新进入的时候进行合书的动画
         if (mReaderAnimation != null && mReaderAnimation.isOpenBook()) {
-            // 两个ImageView设置大小和位置
-            ReaderAnimation.ItemFrameInfo frameInfo = new ReaderAnimation.ItemFrameInfo();
-            frameInfo.leftMargin = firstItemLocation[0];
-            frameInfo.topMargin = firstItemLocation[1];
-            frameInfo.width = itemWidth;
-            frameInfo.height = itemHeight;
-            mReaderAnimation.reverseAnimation(frameInfo);
+            mRecyclerView.scrollToPosition(0);
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    saveFirstCoverPosition();
+                    mReaderAnimation.reverseAnimation(firstItemFrameInfo);
+                }
+            });
+
+
         }
+    }
+
+    private void saveFirstCoverPosition() {
+        if (firstItemFrameInfo != null) {
+            return;
+        }
+
+        firstItemFrameInfo = new ReaderAnimation.ItemFrameInfo();
+        View view = mAdapter.firstCover;
+        if (view == null || view.getParent() == null) {
+            return;
+        }
+        // 计算当前的位置坐标
+        view.getLocationInWindow(location);
+        firstItemFrameInfo.leftMargin = location[0];
+        firstItemFrameInfo.topMargin = location[1];
+        firstItemFrameInfo.width = view.getWidth();
+        firstItemFrameInfo.height = view.getHeight();
     }
 
 
@@ -92,19 +113,13 @@ public class OpenBookActivity extends AppCompatActivity implements BookAdapter.O
 
     @Override
     public void onItemClick(int pos, View view) {
-        if (pos == 0) {
-            view.getLocationInWindow(firstItemLocation);
-        }
-
         // 计算当前的位置坐标
         view.getLocationInWindow(location);
-        itemWidth = view.getWidth();
-        itemHeight = view.getHeight();
         ReaderAnimation.ItemFrameInfo itemFrameInfo = new ReaderAnimation.ItemFrameInfo();
         itemFrameInfo.leftMargin = location[0];
         itemFrameInfo.topMargin = location[1];
-        itemFrameInfo.width = itemWidth;
-        itemFrameInfo.height = itemHeight;
+        itemFrameInfo.width = view.getWidth();
+        itemFrameInfo.height = view.getHeight();
 
         Bitmap coverBitmap = BitmapFactory.decodeResource(getResources(), values.get(pos));
         mReaderAnimation.coverIv.setImageBitmap(coverBitmap);
