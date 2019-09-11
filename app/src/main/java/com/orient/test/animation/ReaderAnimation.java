@@ -140,7 +140,6 @@ public class ReaderAnimation {
 
         float horScale = mWindowWidth / viewWidth;
         float verScale = mWindowHeight / viewHeight;
-        float scale = horScale > verScale ? horScale : verScale;
 
         mScaleAnimation = new ContentScaleAnimation(frameInfo.leftMargin, frameInfo.topMargin - mStatusHeight, horScale, verScale, false);
         mScaleAnimation.setInterpolator(new DecelerateInterpolator());  //设置插值器
@@ -199,7 +198,7 @@ public class ReaderAnimation {
         public int leftMargin;
     }
 
-    public static interface AnimationListener {
+    public interface AnimationListener {
         void openReader();
     }
 }
